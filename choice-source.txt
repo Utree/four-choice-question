@@ -1,0 +1,87 @@
+﻿Dim ans(0 To 2)
+
+Private Sub Mondai(kirikae)
+Dim ransu As Integer
+Dim item(1 To 4)
+
+'選択ボタンを取得
+'ここでは、forループで4回繰り返すことにより４つの選択肢を取得します。
+For i = 1 To 4
+Set item(i) = Worksheets(1).OLEObjects("OptionButton" & kirikae & "_" & i).Object
+Next i
+
+ransu = Int(Rnd * 10) + 1 + kirikae * 10 '乱数を発生(問題を選ぶ)
+Cells(1 + kirikae * 3, 1) = Worksheets("Sheet2").Cells(ransu, 1).Value '問題を表示
+ans(kirikae) = Worksheets("Sheet2").Cells(ransu, 6).Value '答えを登録
+
+'選択肢を表示
+'ここでは、forループで4回繰り返すことにより４つの選択肢を作ります。
+For r = 1 To 4
+item(r).Caption = Worksheets("Sheet2").Cells(ransu, r + 1).Value
+Next r
+End Sub
+
+Private Sub Kotae()
+Dim item1(1 To 3)
+Dim item2(1 To 3)
+
+'選択項目の確認
+For k = 0 To 2
+Set item1(k + 1) = Worksheets(1).OLEObjects("OptionButton" & k & "_" & ans(k)).Object
+item2(k + 1) = item1(k + 1).Value
+Next k
+
+'正誤判定
+If item2(1) = False Then
+    myMSG = myMSG & "動名詞"
+End If
+If item2(2) = False Then
+    myMSG = myMSG & " 時制"
+End If
+If item2(3) = False Then
+    myMSG = myMSG & " 関係詞"
+End If
+
+If myMSG = Empty Then
+MsgBox "全問正解です"
+Else
+MsgBox (myMSG + "が苦手なようです")
+End If
+
+End Sub
+
+Private Sub CommandButton1_Click()
+'問題作成の関数を実行
+'ここでは、forループで3回繰り返すことにより動名詞、時制、関係詞の三つの問題を作ります。
+For t = 0 To 2
+Call Mondai(t)
+Next t
+
+'選択肢をクリアにする
+Dim ctrl As OLEObject
+For Each ctrl In Worksheets("Sheet1").OLEObjects
+    If TypeOf ctrl.Object Is msforms.OptionButton Then
+        ctrl.Object.Value = False
+    End If
+Next
+
+'全画面表示ON
+Application.DisplayFullScreen = True '全画面表示
+ActiveWindow.DisplayWorkbookTabs = False  'シート見出し
+ActiveWindow.DisplayHeadings = False '行列番号
+ActiveWindow.DisplayVerticalScrollBar = False  '垂直スクロールバー
+ActiveWindow.DisplayHorizontalScrollBar = False  '水平スクロールバー
+ActiveWindow.DisplayGridlines = False  '枠線
+End Sub
+
+Private Sub CommandButton2_Click()
+Call Kotae '答え合わせの関数を実行
+
+'全画面表示OFF
+Application.DisplayFullScreen = False '全画面表示
+ActiveWindow.DisplayWorkbookTabs = True  'シート見出し
+ActiveWindow.DisplayHeadings = True '行列番号
+ActiveWindow.DisplayVerticalScrollBar = True  '垂直スクロールバー
+ActiveWindow.DisplayHorizontalScrollBar = True  '水平スクロールバー
+ActiveWindow.DisplayGridlines = True '枠線
+End Sub
